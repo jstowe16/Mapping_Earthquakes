@@ -185,7 +185,43 @@ let sanFranAirport =
 ]};
 
 // Create the map object with center at the San Francisco airport.
-let myMap = L.map('mapid').setView([37.5, -122.5], 10);
+// let myMap = L.map('mapid').setView([37.5, -122.5], 10);
+// var darkmap = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+//   attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery (c) <a href="https://www.mapbox.com/">Mapbox</a>',
+//   maxZoom: 20,
+//   // id: 'mapbox/light-v10',
+//   // id: 'mapbox/satellite-streets-v11',
+//   // id: 'mapbox/dark-v10',
+//   // id: 'mapbox/streets-v11',
+//   id: 'mapbox/navigation-night-v1',
+//   accessToken: API_KEY
+// }).addTo(myMap);
+
+// // Grabbing our GeoJSON data.
+// // L.geoJSON(sanFranAirport).addTo(myMap);
+
+
+// // Grabbing our GeoJSON data.
+// // L.geoJSON(sanFranAirport, {
+// //   // We turn each feature into a marker on the map.
+// //   pointToLayer: function(feature, latlng) {
+// //   console.log(feature);
+// //   return L.marker(latlng)
+// //   .bindPopup("<h2>" + feature.properties.name + "</h2>"+ "<hr> <h3>" + feature.properties.city + ", " + feature.properties.country + "</h3>")
+// //   }
+
+// // }).addTo(myMap);
+
+// L.geoJSON(sanFranAirport, {
+//   onEachFeature: function(feature, layer) {
+//     console.log(layer);
+//     layer.bindPopup("<h2> Airport code: " + feature.properties.faa + "</h2>"+ "<hr> <h3> Airport name: " + feature.properties.name  + "</h3>");
+//    }
+// }).addTo(myMap);
+
+
+// Create the map object with center and zoom level.
+let myMap = L.map('mapid').setView([30, 30], 2);
 var darkmap = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
   attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery (c) <a href="https://www.mapbox.com/">Mapbox</a>',
   maxZoom: 20,
@@ -197,25 +233,67 @@ var darkmap = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{
   accessToken: API_KEY
 }).addTo(myMap);
 
-// Grabbing our GeoJSON data.
-// L.geoJSON(sanFranAirport).addTo(myMap);
+// Accessing the airport GeoJSON URL
+// let airportData = "https://raw.githubusercontent.com/jstowe16/Mapping_Earthquakes/main/majorAirports.json";
+// let airportData = "https://raw.githubusercontent.com/jstowe16/Mapping_Earthquakes/tree/Mapping_GeoJSON_Point/majorAirports.json";
+// let airportData = d3.json(majorAirports);
 
 
-// Grabbing our GeoJSON data.
-// L.geoJSON(sanFranAirport, {
-//   // We turn each feature into a marker on the map.
-//   pointToLayer: function(feature, latlng) {
-//   console.log(feature);
-//   return L.marker(latlng)
-//   .bindPopup("<h2>" + feature.properties.name + "</h2>"+ "<hr> <h3>" + feature.properties.city + ", " + feature.properties.country + "</h3>")
-//   }
+// Store our API endpoint inside queryUrl
+let airportData = "static/js/data/majorAirports.json";
 
-// }).addTo(myMap);
+// console.log(airportData);
+// // Grabbing our GeoJSON data.
+// d3.json(airportData).then(function(data) {
+//   console.log(data);
+// // Creating a GeoJSON layer with the retrieved data.
+// L.geoJSON(data).addTo(myMap);
+// });
 
+// Perform a GET request to the query URL
+d3.json(airportData, function(data) {
+  console.log("geo")
+  console.log(data);
+  
+    // Send the data.features object to the createFeatures function 
+    createFeatures(data.features);
+  });
+  
+  //  Create the createFeatures function to hold the data.features object
+  function createFeatures(airData) {
+  
+    // Define a function we want to run once for each feature in the features array
+    // Give each feature a popup describing the place and time of the earthquake
+    function onEachFeature(features, layer) {
+      layer.bindPopup("<h2> Airport code: " + features.properties.faa 
+      + "</h2><hr><h3>Airport name: " + feature.properties.name + "<h3>");
+    }
+  
+    // Create a GeoJSON layer containing the features array on the earthquakeData object
+    // Run the onEachFeature function once for each piece of data in the array
+    var airports = L.geoJSON(airData, {
+      onEachFeature: onEachFeature
+    });
+  
+    // Send our neighborhoods layer to the createMap function
+    createMap(airports);
+  }
+  function createMap(airports) {
 
-L.geoJSON(sanFranAirport, {
-  onEachFeature: function(feature, layer) {
-    console.log(layer);
-    layer.bindPopup("<h2> Airport code: " + feature.properties.faa + "</h2>"+ "<hr> <h3> Airport name: " + feature.properties.name  + "</h3>");
-   }
-}).addTo(myMap);
+    // Define streetmap and darkmap layers
+    var darkmap = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+      attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery (c) <a href="https://www.mapbox.com/">Mapbox</a>',
+      maxZoom: 20,
+      // id: 'mapbox/light-v10',
+      // id: 'mapbox/satellite-streets-v11',
+      // id: 'mapbox/dark-v10',
+      // id: 'mapbox/streets-v11',
+      id: 'mapbox/navigation-night-v1',
+      accessToken: API_KEY
+    });
+  
+    // Create our map, giving it the streetmap and earthquakes layers to display on load
+    var myMap = L.map('mapid').setView([30, 30], 2);
+ 
+  }
+
