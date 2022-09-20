@@ -14,4 +14,4 @@ The following were utilized to build the Module 13 challenge:
 ## Results
 The figure below captures the default loading of the index.html file, showing the base map layers, the overlay layers enabled by default and the visualizations associated. 
 
-![This is an image](/static/images/Earthquake_Challenge_indexDefault.png)
+![img](/static/images/Earthquake_Challenge_indexDefault.png)
